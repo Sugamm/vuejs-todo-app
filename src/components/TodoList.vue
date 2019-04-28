@@ -2,16 +2,8 @@
   <div class="hello">
     <input type="text" class="todo-input" placeholder="What needs to be done" v-model="newTodo" @keyup.enter="addTodo">
     <transition-group name="fade" enter-active-clase="animated fadeInUp" leave-active-class="animated fadeOutDown">
-      <div v-for="(todo, index) in todosFilter" :key="todo.id" class="todo-item">
-          <div class="todo-item-left">
-            <input type="checkbox" v-model="todo.completed">
-            <div v-if="!todo.editing" @dblclick="editTodo(todo)" class="todo-item-label" :class="{completed : todo.completed}">{{todo.title}}</div>
-            <input type="text" v-else class="todo-item-edit" v-model="todo.title" @blur="doneTodo(todo)" @keyup.enter="doneTodo(todo)" @keyup.esc="cancelEditing(todo)" v-focus>
-          </div>
-          <div class="remove-items" @click="removeTodo(index)">
-            &times;
-          </div>
-      </div>
+      <TodoItem v-for="(todo, index) in todosFilter" :key="todo.id" :todo="todo" :index="index"  :checkAll="!anyRemaining" @removeTodo="removeTodo" @finishedEdit="finishedEdit">
+      </TodoItem>
     </transition-group>
 
     <div class="extra-container">
@@ -40,8 +32,12 @@
 </template>
 
 <script>
+import TodoItem from "./TodoItem"
 export default {
   name: 'TodoList',
+  components: {
+    TodoItem
+  },
   data() {
       return {
           newTodo: '',
@@ -132,13 +128,16 @@ export default {
       },
       clearCompleted(){
         this.todos = this.todos.filter(todo => !todo.completed)
+      },
+      finishedEdit(data){
+        this.todos.splice(data.index, 1, data.todo)
       }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+<style lang="scss">
     @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css");
     .todo-input {
         width: 100%;
