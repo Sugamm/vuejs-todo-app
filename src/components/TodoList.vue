@@ -81,13 +81,6 @@ export default {
       return this.todos.filter(todo=> todo.completed).length > 0
     }
   },
-  directives:{
-    focus: {
-      inserted: function(el){
-        el.focus()
-      }
-    }
-  },
   methods: {
       addTodo() {
           if(this.newTodo.trim().length == 0){
@@ -104,24 +97,6 @@ export default {
           })
         this.newTodo=''
         this.idForTodo++
-      },
-      removeTodo(index) {
-        this.todos.splice(index, 1)
-      },
-      editTodo(todo) {
-        this.beforeEditCache = todo.title
-        todo.editing=true;
-      },
-      doneTodo(todo) {
-        if(todo.title.trim() == ''){
-          todo.title=this.beforeEditCache
-          return
-        }
-        todo.editing=false;
-      },
-      cancelEditing(todo) {
-        todo.title = this.beforeEditCache
-        todo.editing = false
       },
       checkAllTodos(){
         this.todos.forEach((todo) => todo.completed = event.target.checked);
