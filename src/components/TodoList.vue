@@ -2,7 +2,11 @@
   <div class="hello">
     <input type="text" class="todo-input" placeholder="What needs to be done" v-model="newTodo" @keyup.enter="addTodo">
     <transition-group name="fade" enter-active-clase="animated fadeInUp" leave-active-class="animated fadeOutDown">
-      <TodoItem v-for="(todo, index) in todosFilter" :key="todo.id" :todo="todo" :index="index"  :checkAll="!anyRemaining" @removeTodo="removeTodo" @finishedEdit="finishedEdit">
+      <!-- This way you can communicate between components parent to child using $emit function -->
+      <!-- <TodoItem v-for="(todo, index) in todosFilter" :key="todo.id" :todo="todo" :index="index"  :checkAll="!anyRemaining" @removeTodo="removeTodo" @finishedEdit="finishedEdit">
+      </TodoItem> -->
+      <!-- Using Event Bus you can communicate with any component in the project -->
+      <TodoItem v-for="(todo, index) in todosFilter" :key="todo.id" :todo="todo" :index="index"  :checkAll="!anyRemaining">
       </TodoItem>
     </transition-group>
 
@@ -60,6 +64,10 @@ export default {
           ]
       }
   },
+  created() {
+    eventBus.$on('removeTodo', (index)=> this.removeTodo(index))
+    eventBus.$on('finishedEdit', (data)=> this.finishedEdit(data))
+  },
   computed: {
     remaining(){
       return this.todos.filter(todo => !todo.completed).length
@@ -97,6 +105,20 @@ export default {
           })
         this.newTodo=''
         this.idForTodo++
+      },
+      removeTodo(index) {
+        this.todos.splice(index, 1)
+      },
+      editTodo(todo) {
+        this.beforeEditCache = todo.title
+        todo.editing=true;
+      },
+      doneTodo(todo) {
+        if(todo.title.trim() == ''){
+          todo.title=this.beforeEditCache
+          return
+        }
+        todo.editing=false;
       },
       checkAllTodos(){
         this.todos.forEach((todo) => todo.completed = event.target.checked);
