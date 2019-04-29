@@ -134,6 +134,7 @@ export default {
         this.todos = this.todos.filter(todo => !todo.completed)
       },
       finishedEdit(data){
+        const index = this.todos.findIndex(item=>item.id == data.id)
         this.todos.splice(data.index, 1, data.todo)
       }
   }
